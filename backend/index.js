@@ -1,44 +1,35 @@
 const express = require('express');
 const mongoose = require("mongoose");
-const app = express();
-app.use(express.json());
+const {Balance , Expenses } = require("./db");
 const port = 3000;
-// mongoose.connect(
-//     "mongodb+srv://sanu0:sanu0123@cluster0.l7xzq0z.mongodb.net/"
-// )
 
-const Balance = {
-    balance : 12500
-}
+const app = express();
 
-app.get('/balance', (req, res) => {
+app.use(express.json());
+
+
+
+
+app.get('/balance', async function (req, res) {
     //Give you the available balnce in your khata
+    const response = await Balance.find({});
+
     res.status(200).json({
-        balance : Balance.balance
+       amount: response[0].amount
     })
-})
-app.put('/balance', (req, res) => {
-    try{
-        const balance = req.body.balance;
-        Balance.balance = balance;
-        res.status(200).json({
-            msg : "Balance updated. Your current balance is : " + Balance.balance
-        })
-
-    }catch(e){
-        console.log(e);
-        res.json({
-            msg : "Something wrong!"
-        })
-    }
     
 })
-app.post('/expense', (req, res) => {
+
+app.post('/balance', async (req, res) => {
+    const amount = req.body.amount;
     try{
-        const balance = req.body.balance;
-        Balance.balance += balance;
+        await Balance.updateOne({
+            //id : '65a02f8fbe25ed57a36551c7'
+        },{
+            amount : amount
+        })
         res.status(200).json({
-            msg : "Balance updated. Your current balance is : " + Balance.balance
+            msg : "Balance added"
         })
 
     }catch(e){
@@ -48,8 +39,41 @@ app.post('/expense', (req, res) => {
         })
     }
 })
-app.get('/expense', (req, res) => {
+app.get('/expense', async (req, res) => {
+    const response = await Expenses.find({});
+    res.status(200).json({
+        response
+     })
+})
+app.post('/expense', async (req, res) => {
+    const amount = req.body.price;
+    const description = req.body.description;
+    const isRecieved = req.body.isRecieved;
+    try{
+        const resp = await Expenses.create({
+            amount,
+            description,
+            isRecieved
+        })
+        //console.log(resp.amount);
+        if(isRecieved){
+            await Balance.updateOne({},{
+                "$inc" : {amount : resp.amount}
+            })
+        }else{
+            await Balance.updateOne({},{
+                "$inc" : {amount : -resp.amount}
+            })
+        }
+        res.status(200).json({
+            msg : "expenses added"
+        })
+
+    }catch(e){
+        console.log(e);
+    }
     
+
 })
 
 app.listen(port, () => {
