@@ -9,6 +9,7 @@ const app = express();
 app.use(express.json());
 
 
+<<<<<<< HEAD
 function validateInputUpdateBalance(obj){
     const updateBalanceSchema = updateBalance;
     const response = updateBalanceSchema.safeParse(obj);
@@ -31,6 +32,8 @@ function validateInputUpdateExpense(obj){
     }
 }
 
+=======
+>>>>>>> 254267295057f0ae6eff100a952bc1a0bfe63bee
 app.get('/balance', async function (req, res) {
     //Give you the available balnce in your khata
     const response = await Balance.find({});
