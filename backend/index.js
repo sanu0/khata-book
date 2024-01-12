@@ -8,8 +8,6 @@ const app = express();
 app.use(express.json());
 
 
-
-
 app.get('/balance', async function (req, res) {
     //Give you the available balnce in your khata
     const response = await Balance.find({});

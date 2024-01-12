@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-mongoose.connect('mongodb+srv://admin:Test123@cluster0.4upqz2m.mongodb.net/khata-book');
+mongoose.connect(process.env.MONGOOSE_CONNECT);
 
 const balanceSchema = mongoose.Schema({
   amount: Number
